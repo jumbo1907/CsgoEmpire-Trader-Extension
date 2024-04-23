@@ -1,7 +1,7 @@
 {
   "name": "csgoempire-trader-extension",
   "displayName": "Unnoffical CsgoEmpire Trader Extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Jumbo1907",
   "description": "Unnoffical CsgoEmpire extension aimed at enhancing the trading process.",
   "type": "module",
