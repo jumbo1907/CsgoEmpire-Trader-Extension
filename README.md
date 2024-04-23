@@ -6,7 +6,7 @@ This extension is a tool for traders on CSGOEmpire.com. Currently it is very lim
 
 ## Features
 
-- Trades are automatically set up with the correct item selected.
+- Trades are automatically set up with the correct item selected. [showcase](https://www.youtube.com/watch?v=ArWSiCZ4bJU)
 
 ## Planned features
 
