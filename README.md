@@ -13,6 +13,7 @@ This extension is a tool for traders on CSGOEmpire.com. Currently it is very lim
 - Compare prices with other marketplaces
 - Automatically bid on auction after defining a max price
 - Hyperlinks to external marketplaces
+- Bulk selling of items with prices from external marketplaces
 - More to come...
 
 ## How it works
