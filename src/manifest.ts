@@ -15,6 +15,9 @@ export default defineManifest({
     48: 'img/logo-48.png',
     128: 'img/logo-128.png',
   },
+  background: {
+    service_worker: 'src/background/background.ts',
+  },
   content_scripts: [
     {
       matches: ['https://steamcommunity.com/tradeoffer/new/*'],
@@ -50,6 +53,7 @@ export default defineManifest({
         'img/logo-48.png',
         'img/logo-128.png',
         'inject/csgoempire-inject.js',
+        'inject/steam-inject.js'
       ],
       matches: [
         'https://*.csgoempire.gg/*',
@@ -69,4 +73,5 @@ export default defineManifest({
       ],
     },
   ],
+  permissions: ['notifications'],
 })

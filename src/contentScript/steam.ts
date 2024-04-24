@@ -1,7 +1,39 @@
+let assetId = new URLSearchParams(window.location.search).get('asset_id')
+let ts = new URLSearchParams(window.location.search).get('ts')
+let auto = new URLSearchParams(window.location.search).get('auto') === 'true' && isTsValid(ts)
+
+// Check if the ts is valid; Current ts is valid if it is less than 3 seconds old
+function isTsValid(ts: string | null) {
+  if (!ts) return false
+  let now = new Date().getTime()
+  let tsTime = Number(ts)
+  return now - tsTime < 3000
+}
+
+if (auto && assetId) {
+  var node = document.getElementsByTagName('body')[0]
+  var script = document.createElement('script')
+  script.setAttribute('type', 'text/javascript')
+  script.setAttribute('src', chrome.runtime.getURL('inject/steam-inject.js'))
+  node.appendChild(script)
+}
+
+// Add an event listener for the custom event
+window.addEventListener('ShowAlertDialog', (event) => {
+  // Extract title and message from the event detail
+  // @ts-ignore
+  const { title, message } = event.detail
+
+  // Send the message to the background scipt.
+  chrome.runtime.sendMessage({ type: 'ShowAlertDialog', title, message })
+
+  // Close the trade window
+  window.close()
+})
+
 function main() {
   // The 'asset_id' query parameter is the asset id of the item that the user wants to sell. This
   // argument is added to the trade url in the
-  let assetId = new URLSearchParams(window.location.search).get('asset_id')
   if (!assetId || isNaN(Number(assetId))) return
 
   // A flag to indicate if the item has been clicked. If we click the item multiple times, the
@@ -27,6 +59,9 @@ function main() {
 
         // Click the 'Yes, this is a gift' checkbox.
         document.querySelector<HTMLElement>('.btn_green_steamui.btn_medium')?.click()
+
+        // Click the 'Make offer' button. Only if the 'auto' query parameter is true
+        if (auto) document.querySelector<HTMLElement>('.trade_confirmbtn')?.click()
       }
     })
   })

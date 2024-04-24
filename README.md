@@ -7,6 +7,7 @@ This extension is a tool for traders on CSGOEmpire.com. Currently it is very lim
 ## Features
 
 - Trades are automatically set up with the correct item selected. [showcase](https://www.youtube.com/watch?v=ArWSiCZ4bJU)
+- Trades are sent instantly in a single click [showcase](https://www.youtube.com/watch?v=C9F-EHJCkyA)
 
 ## Planned features
 
@@ -19,6 +20,8 @@ This extension is a tool for traders on CSGOEmpire.com. Currently it is very lim
 ## How it works
 
 A [script](https://github.com/jumbo1907/CsgoEmpire-Trader-Extension/blob/main/public/inject/csgoempire-inject.js) is injected into the CSGOEmpire website. This script loops over the state of deposits and appends the item asset_id to the trade url. When the user clicks on the trade button, the [contentscript](https://github.com/jumbo1907/CsgoEmpire-Trader-Extension/blob/main/src/contentScript/steam.ts) is able to read the asset_id from the url and select the correct item in the trade window. It will also automatically click the "Ready to trade" button and accepts the "Yes, this is a gift" modal. The user will still have to confirm the trade.
+
+The instant item sent is built on top of the trade setup. We add some extra data to the trade url to determine if the user wants to send the item instantly. If so, we also click the send item button and override the 'ShowAlertDialog' function Steam uses. Once we notice the function being used, it gets sent to the content script which will close the tab and send the message to the background script. The background script will then send a notification to the user.
 
 ## Installation
 
