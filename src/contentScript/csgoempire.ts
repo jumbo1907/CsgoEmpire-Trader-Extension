@@ -51,7 +51,8 @@ function handleMutation(mutation: MutationRecord) {
       // after navigating back and forth between the trade window.
       let href = `${sendButton.getAttribute('href') as string}&auto=true&ts=${new Date().getTime()}`
 
-      window.open(href, '_blank')
+      // Send to background script. The background script will open the trade window in a new tab but won't focus it.
+      chrome.runtime.sendMessage({ type: 'auto-send', url: href })
     }
   }
 }
