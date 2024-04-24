@@ -21,7 +21,7 @@ export default defineManifest({
   content_scripts: [
     {
       matches: ['https://steamcommunity.com/tradeoffer/new/*'],
-      js: ['src/contentScript/steam.ts'],
+      js: ['src/contentScript/steam/steam.ts'],
       run_at: 'document_end',
     },
     {
@@ -41,7 +41,7 @@ export default defineManifest({
         'https://*.csgoempire.link/*',
         'https://*.csgoempire.com/*',
       ],
-      js: ['src/contentScript/csgoempire.ts'],
+      js: ['src/contentScript/csgoempire/csgoempire.ts'],
       run_at: 'document_end',
     },
   ],
