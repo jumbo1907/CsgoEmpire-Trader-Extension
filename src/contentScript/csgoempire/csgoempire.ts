@@ -16,8 +16,6 @@ new MutationObserver((mutations) => {
   subtree: true,
 })
 
-let tradeBackButtonClasses = 'btn-secondary pop stretch flex rounded text-dark-5 mr-lg'.split(' ')
-
 function handleMutation(mutation: MutationRecord) {
   if (mutation.addedNodes.length == 0) return
 
@@ -25,10 +23,9 @@ function handleMutation(mutation: MutationRecord) {
     if (!(node instanceof HTMLElement)) return
 
     // Check if the node is a trade back button
-    let selector = tradeBackButtonClasses.map((c) => `.${c}`).join('')
-    let button = node.querySelector(selector) as HTMLElement | null
-    if (button) {
-      handleAutoSendButton(button)
+    let tradeBackButton = node.querySelector('.btn-secondary.pop.stretch.flex.rounded.text-dark-5.mr-lg') as HTMLElement | null
+    if (tradeBackButton) {
+      handleAutoSendButton(tradeBackButton)
       return
     }
   })
