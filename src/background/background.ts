@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
-    case 'ShowAlertDialog':
+    case 'desktop-notification':
       chrome.notifications.create({
         type: 'basic',
         iconUrl: 'img/logo-128.png',

@@ -6,5 +6,5 @@
  * The background script will then use the chrome notification API to show a notification to the user.
  */
 function ShowAlertDialog(title, message) {
-  window.dispatchEvent(new CustomEvent('ShowAlertDialog', { detail: { title, message } }))
+  window.dispatchEvent(new CustomEvent('desktop-notification', { detail: { title, message } }))
 }
