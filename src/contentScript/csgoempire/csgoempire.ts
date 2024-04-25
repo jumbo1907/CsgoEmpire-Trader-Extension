@@ -23,10 +23,17 @@ function handleMutation(mutation: MutationRecord) {
     if (!(node instanceof HTMLElement)) return
 
     // Check if the node is a trade back button
-    let tradeBackButton = node.querySelector('.btn-secondary.pop.stretch.flex.rounded.text-dark-5.mr-lg') as HTMLElement | null
+    let tradeBackButton = node.querySelector(
+      '.btn-secondary.pop.stretch.flex.rounded.text-dark-5.mr-lg',
+    ) as HTMLElement | null
     if (tradeBackButton) {
       handleAutoSendButton(tradeBackButton)
       return
+    }
+
+    let withdrawItemCard = node.querySelector('.item-card') as HTMLElement | null
+    if (withdrawItemCard && window.location.pathname === '/withdraw/steam/market') {
+      handleWithdrawItemCard(withdrawItemCard)
     }
   })
 
@@ -51,5 +58,33 @@ function handleMutation(mutation: MutationRecord) {
       // Send to background script. The background script will open the trade window in a new tab but won't focus it.
       chrome.runtime.sendMessage({ type: 'auto-send', url: href })
     }
+  }
+
+  function handleWithdrawItemCard(card: HTMLElement) {
+    // Add click event
+    card.onclick = (event) => {
+      let isCtrlClick = event.ctrlKey
+      let itemID = getItemID(card)
+      if (!itemID) {
+        console.error('Failed to get item ID for item card', card)
+        return
+      }
+
+      // Send to inject script
+      window.postMessage({ type: 'withdraw-item-card-click', itemID, isCtrlClick }, '*')
+    }
+  }
+
+  function getItemID(card: HTMLElement): number | null {
+    let moreInfoElement = card.querySelector('a') as HTMLAnchorElement | null
+    if (!moreInfoElement) return null
+
+    let href = moreInfoElement.href
+    if (!href) return null
+
+    let itemID = href.split('/').pop()
+    if (!itemID) return null
+
+    return parseInt(itemID)
   }
 }
