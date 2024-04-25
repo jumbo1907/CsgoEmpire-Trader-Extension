@@ -19,13 +19,13 @@ if (auto && assetId) {
 }
 
 // Add an event listener for the custom event
-window.addEventListener('ShowAlertDialog', (event) => {
+window.addEventListener('desktop-notification', (event) => {
   // Extract title and message from the event detail
   // @ts-ignore
   const { title, message } = event.detail
 
   // Send the message to the background scipt.
-  chrome.runtime.sendMessage({ type: 'ShowAlertDialog', title, message })
+  chrome.runtime.sendMessage({ type: 'desktop-notification', title, message })
 
   // Close the trade window
   window.close()
