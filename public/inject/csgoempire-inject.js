@@ -6,10 +6,19 @@ window.addEventListener(
   function (event) {
     if (event.source !== window) return
 
-    if (event.data.type === 'withdraw-item-card-click') {
-      handleWithdrawItemClick(event.data)
+    console.log('Received event from content script', event.data)
+    switch (event.data.type) {
+      case 'withdraw-item-card-click':
+        handleWithdrawItemClick(event.data)
+        break
+      case 'buy-selected-items':
+        handleBuySelectedItems()
+        break
+      default:
+        break
     }
   },
+
   false,
 )
 
@@ -44,6 +53,115 @@ function handleWithdrawItemClick(data) {
   selectedItemsCopy = selectedItemsCopy.filter((item) => !isAuction(item))
 }
 
+async function handleBuySelectedItems() {
+  const store = getStore()
+
+  if (!store) return
+
+  const selectedItems = [...store?.trades?.selectedItems] || []
+
+  // If there are no selected items or only one selected item, return.
+  // Vanilla CSGOEmpire will handle this.
+  if (selectedItems.length <= 1) {
+    return
+  }
+
+  
+  store.trades.selectedItems = []
+  selectedItemsCopy = []
+
+  const tokenResponse = await getSecurityToken()
+  if (!tokenResponse.success) {
+    console.error('Failed to get security token')
+
+    window.dispatchEvent(
+      new CustomEvent('desktop-notification', {
+        detail: {
+          title: 'Failed to get security token',
+          message: tokenResponse.message || 'An error occurred',
+        },
+      }),
+    )
+    return
+  }
+
+  const token = tokenResponse.token
+
+  // Loop over selected items and buy them
+  for (let item of selectedItems) {
+    if (isAuction(item)) {
+      continue
+    }
+
+    const itemID = item.id
+    const coinValue = item.market_value
+
+    withdrawItem(itemID, coinValue, token)
+      .then((withdrawResponse) => {
+        if (!withdrawResponse.success) {
+          window.dispatchEvent(
+            new CustomEvent('desktop-notification', {
+              detail: {
+                title: `Failed to withdraw item ${itemID}`,
+                message: withdrawResponse.message || 'An error occurred',
+              },
+            }),
+          )
+
+          return
+        }
+
+        console.log(`Successfully withdrew item ${itemID}`)
+      })
+      .catch((error) => {
+        window.dispatchEvent(
+          new CustomEvent('desktop-notification', {
+            detail: {
+              title: `Failed to withdraw item ${itemID}`,
+              message: error.message || 'An error occurred',
+            },
+          }),
+        )
+      })
+
+    // Wait 250ms
+    await new Promise((resolve) => setTimeout(resolve, 250))
+  }
+}
+
+async function withdrawItem(itemID, coinValue, token) {
+  const url = `https://${window.location.hostname}/api/v2/trading/deposit/${itemID}/withdraw`
+  let response = await fetch(url, {
+    headers: {
+      accept: 'application/json, text/plain, */*',
+      'accept-language': 'en-US,en-BE;q=0.9,en;q=0.8,nl-BE;q=0.7,nl;q=0.6',
+      'cache-control': 'no-cache',
+      'content-type': 'application/json',
+      pragma: 'no-cache',
+      priority: 'u=1, i',
+      'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+      'x-empire-device-identifier': localStorage.getItem('csgoempire:security:uuid'),
+      'x-env-class': 'blue',
+    },
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    body: JSON.stringify({
+      security_token: token,
+      coin_value: coinValue,
+    }),
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+  })
+
+  let data = await response.json()
+  return data
+}
+
 function handleCtrlClick(isSelect, itemID, store) {
   console.log({
     isSelect,
@@ -61,9 +179,42 @@ function getStore() {
   return document.getElementById('app')?.__vue_app__?.config.globalProperties.$store.state
 }
 
+async function getSecurityToken() {
+  let url = `https://${window.location.hostname}/api/v2/user/security/token`
+
+  let response = await fetch(url, {
+    headers: {
+      accept: 'application/json, text/plain, */*',
+      'accept-language': 'en-US,en-BE;q=0.9,en;q=0.8,nl-BE;q=0.7,nl;q=0.6',
+      'cache-control': 'no-cache',
+      'content-type': 'application/json',
+      pragma: 'no-cache',
+      priority: 'u=1, i',
+      'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+      'x-empire-device-identifier': localStorage.getItem('csgoempire:security:uuid'),
+      'x-env-class': 'blue',
+    },
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    body: JSON.stringify({
+      code: '0000',
+      uuid: localStorage.getItem('csgoempire:security:uuid'),
+    }),
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+  })
+
+  let data = await response.json()
+  return data
+}
+
 // Loop over all trades and update trade URLs with asset ID
 function updateTradeUrls() {
-  //@ts-ignore
   let store = getStore()
   if (!store) return
 

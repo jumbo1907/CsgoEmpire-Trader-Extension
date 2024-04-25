@@ -8,6 +8,17 @@ function injectScript(file_path: string, tag: string) {
   node.appendChild(script)
 }
 
+// Add an event listener for the custom event
+window.addEventListener('desktop-notification', (event) => {
+  // Extract title and message from the event detail
+  // @ts-ignore
+  const { title, message } = event.detail
+
+  // Send the message to the background scipt.
+  chrome.runtime.sendMessage({ type: 'desktop-notification', title, message })
+})
+
+
 // Listen for changes in the DOM.
 new MutationObserver((mutations) => {
   mutations.forEach((mutation) => handleMutation(mutation))
@@ -34,6 +45,18 @@ function handleMutation(mutation: MutationRecord) {
     let withdrawItemCard = node.querySelector('.item-card') as HTMLElement | null
     if (withdrawItemCard && window.location.pathname === '/withdraw/steam/market') {
       handleWithdrawItemCard(withdrawItemCard)
+    }
+
+    // Check if a button got added with the text "Confirm"
+    let confirmButton = node.querySelector(
+      '.btn-primary.pop.stretch.flex.rounded.text-dark-5',
+    ) as HTMLElement | null
+
+    if (confirmButton) {
+      // Find span > div > span
+      let span = confirmButton.querySelector('span > div > span') as HTMLElement | null
+      if (span && span.textContent === 'Confirm')
+        confirmButton.onclick = () => window.postMessage({ type: 'buy-selected-items' }, '*')
     }
   })
 
