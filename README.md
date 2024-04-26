@@ -4,6 +4,8 @@ This extension is a tool for traders on CSGOEmpire.com. Currently it is very lim
 
 > This project is not affiliated with CSGOEmpire.com in any way. It is an unofficial extension. Please do not use the on site support for questions or issues related to this extension. Instead, use the [GitHub issues](https://github.com/jumbo1907/CsgoEmpire-Trader-Extension/issues) or contact me directly (discord jumbo1907).
 
+Currently the extension only works if the language is set to ENG. This is because the extension relies on the text of the website to determine the state of certain components. This will be fixed in the future.
+
 ## Features
 
 - Trades are automatically set up with the correct item selected. [showcase](https://www.youtube.com/watch?v=ArWSiCZ4bJU)
