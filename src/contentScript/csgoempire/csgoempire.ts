@@ -18,7 +18,6 @@ window.addEventListener('desktop-notification', (event) => {
   chrome.runtime.sendMessage({ type: 'desktop-notification', title, message })
 })
 
-
 // Listen for changes in the DOM.
 new MutationObserver((mutations) => {
   mutations.forEach((mutation) => handleMutation(mutation))
@@ -59,55 +58,55 @@ function handleMutation(mutation: MutationRecord) {
         confirmButton.onclick = () => window.postMessage({ type: 'buy-selected-items' }, '*')
     }
   })
+}
 
-  function handleAutoSendButton(button: HTMLElement) {
-    // Firstly we need to get a reference to the 'Send' button so we can copy its attributes such as the href.
-    let parent = button.parentElement as HTMLElement | null
-    let sendButton = parent?.querySelector('a') as HTMLElement | null
-    if (!sendButton) return
+function handleAutoSendButton(button: HTMLElement) {
+  // Firstly we need to get a reference to the 'Send' button so we can copy its attributes such as the href.
+  let parent = button.parentElement as HTMLElement | null
+  let sendButton = parent?.querySelector('a') as HTMLElement | null
+  if (!sendButton) return
 
-    // Change the back button to auto-send button
-    button.classList.replace('btn-secondary', 'btn-primary')
-    let span = button.querySelector('span > div > span') as HTMLElement | null
-    if (span) span.textContent = 'Insta-send'
+  // Change the back button to auto-send button
+  button.classList.replace('btn-secondary', 'btn-primary')
+  let span = button.querySelector('span > div > span') as HTMLElement | null
+  if (span) span.textContent = 'Insta-send'
 
-    button.onclick = () => {
-      // We copy the url from the 'Send' button and append the 'auto' query parameter to it. We also
-      // append the current time to the url. We verify the ts in the steam script and ignore the auto parameter
-      // if the ts is older than a few seconds. This way the user doesn't accidentally send the item multiple times
-      // after navigating back and forth between the trade window.
-      let href = `${sendButton.getAttribute('href') as string}&auto=true&ts=${new Date().getTime()}`
+  button.onclick = () => {
+    // We copy the url from the 'Send' button and append the 'auto' query parameter to it. We also
+    // append the current time to the url. We verify the ts in the steam script and ignore the auto parameter
+    // if the ts is older than a few seconds. This way the user doesn't accidentally send the item multiple times
+    // after navigating back and forth between the trade window.
+    let href = `${sendButton.getAttribute('href') as string}&auto=true&ts=${new Date().getTime()}`
 
-      // Send to background script. The background script will open the trade window in a new tab but won't focus it.
-      chrome.runtime.sendMessage({ type: 'auto-send', url: href })
+    // Send to background script. The background script will open the trade window in a new tab but won't focus it.
+    chrome.runtime.sendMessage({ type: 'auto-send', url: href })
+  }
+}
+
+function handleWithdrawItemCard(card: HTMLElement) {
+  // Add click event
+  card.onclick = (event) => {
+    let isCtrlClick = event.ctrlKey
+    let itemID = getItemID(card)
+    if (!itemID) {
+      console.error('Failed to get item ID for item card', card)
+      return
     }
+
+    // Send to inject script
+    window.postMessage({ type: 'withdraw-item-card-click', itemID, isCtrlClick }, '*')
   }
+}
 
-  function handleWithdrawItemCard(card: HTMLElement) {
-    // Add click event
-    card.onclick = (event) => {
-      let isCtrlClick = event.ctrlKey
-      let itemID = getItemID(card)
-      if (!itemID) {
-        console.error('Failed to get item ID for item card', card)
-        return
-      }
+function getItemID(card: HTMLElement): number | null {
+  let moreInfoElement = card.querySelector('a') as HTMLAnchorElement | null
+  if (!moreInfoElement) return null
 
-      // Send to inject script
-      window.postMessage({ type: 'withdraw-item-card-click', itemID, isCtrlClick }, '*')
-    }
-  }
+  let href = moreInfoElement.href
+  if (!href) return null
 
-  function getItemID(card: HTMLElement): number | null {
-    let moreInfoElement = card.querySelector('a') as HTMLAnchorElement | null
-    if (!moreInfoElement) return null
+  let itemID = href.split('/').pop()
+  if (!itemID) return null
 
-    let href = moreInfoElement.href
-    if (!href) return null
-
-    let itemID = href.split('/').pop()
-    if (!itemID) return null
-
-    return parseInt(itemID)
-  }
+  return parseInt(itemID)
 }
