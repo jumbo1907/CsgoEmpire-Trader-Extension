@@ -66,7 +66,6 @@ async function handleBuySelectedItems() {
     return
   }
 
-  
   store.trades.selectedItems = []
   selectedItemsCopy = []
 
@@ -173,6 +172,47 @@ function handleCtrlClick(isSelect, itemID, store) {
   } else {
     store.trades.selectedItems = store.trades.selectedItems.filter((item) => item.id !== itemID)
   }
+}
+
+function selectAllItemsOnDepositPage() {
+  console.log('selectAllItemsOnDepositPage')
+
+  // Loop through every element with the 'item-card' class, and click it. Add 20ms delay between each click.
+  // Elements may not have the 'item-card__disabled' class.
+  let itemCards = document.querySelectorAll('.item-card:not(.item-card__disabled)')
+
+  itemCards.forEach((itemCard, index) => {
+    // Check if the item is already selected.
+    let borderDiv = itemCard.parentElement.children[1]
+
+    // Check if the second div has style display: none
+    if (borderDiv.style.display === 'none') {
+      setTimeout(() => {
+        itemCard.click()
+      }, index * 20)
+    }
+  })
+}
+
+function deselectAllItemsOnDepositPage() {
+  console.log('deselectAllItemsOnDepositPage')
+
+  // Loop through every element with the 'item-card' class, and click it. Add 20ms delay between each click.
+  // Elements may not have the 'item-card__disabled' class.
+  let itemCards = document.querySelectorAll('.item-card:not(.item-card__disabled)')
+
+  itemCards.forEach((itemCard, index) => {
+    // Check if the item is already selected.
+    let borderDiv = itemCard.parentElement.children[1]
+
+    // Check if the second div has style display: none
+
+    if (borderDiv.style.display !== 'none') {
+      setTimeout(() => {
+        itemCard.click()
+      }, index * 20)
+    }
+  })
 }
 
 function getStore() {

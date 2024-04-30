@@ -57,6 +57,19 @@ function handleMutation(mutation: MutationRecord) {
       if (span && span.textContent === 'Confirm')
         confirmButton.onclick = () => window.postMessage({ type: 'buy-selected-items' }, '*')
     }
+
+    let isOnDepositPage: boolean = window.location.pathname === '/deposit/steam'
+    let inventoryOptions = node.querySelector('.flex-between.flex.w-full') as HTMLElement | null
+
+    if (isOnDepositPage && inventoryOptions) {
+      const paths = ['components/select-all-button.html', 'components/deselect-all-button.html']
+
+      paths.forEach((path) => {
+        fetch(chrome.runtime.getURL(path))
+          .then((response) => response.text())
+          .then((html) => inventoryOptions.insertAdjacentHTML('beforeend', html))
+      })
+    }
   })
 }
 
