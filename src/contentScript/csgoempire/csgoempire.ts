@@ -18,7 +18,6 @@ window.addEventListener('desktop-notification', (event) => {
   chrome.runtime.sendMessage({ type: 'desktop-notification', title, message })
 })
 
-
 // Listen for changes in the DOM.
 new MutationObserver((mutations) => {
   mutations.forEach((mutation) => handleMutation(mutation))
@@ -33,21 +32,21 @@ function handleMutation(mutation: MutationRecord) {
   mutation.addedNodes.forEach((node) => {
     if (!(node instanceof HTMLElement)) return
 
-    // Check if the node is a trade back button
     let tradeBackButton = node.querySelector(
       '.btn-secondary.pop.stretch.flex.rounded.text-dark-5.mr-lg',
     ) as HTMLElement | null
-    if (tradeBackButton) {
-      handleAutoSendButton(tradeBackButton)
-      return
-    }
+    if (tradeBackButton) handleAutoSendButton(tradeBackButton)
 
     let withdrawItemCard = node.querySelector('.item-card') as HTMLElement | null
     if (withdrawItemCard && window.location.pathname === '/withdraw/steam/market') {
       handleWithdrawItemCard(withdrawItemCard)
     }
 
-    // Check if a button got added with the text "Confirm"
+    /**
+     * Check if a button got added with the text "Confirm".
+     *
+     * We use this for purchasing multiple listings at once.
+     */
     let confirmButton = node.querySelector(
       '.btn-primary.pop.stretch.flex.rounded.text-dark-5',
     ) as HTMLElement | null
@@ -57,6 +56,37 @@ function handleMutation(mutation: MutationRecord) {
       let span = confirmButton.querySelector('span > div > span') as HTMLElement | null
       if (span && span.textContent === 'Confirm')
         confirmButton.onclick = () => window.postMessage({ type: 'buy-selected-items' }, '*')
+    }
+
+    /**
+     * Check if there is a button with the text "Offer" added to the DOM.
+     *
+     * We use this so we can append our own html elements to the dom that enables automatic bidding.
+     */
+
+    // Check for span with the text "Offer"
+    let offerButton = node.querySelector(
+      '#scrollable-sidebar-element > div:nth-child(2) > div > div:nth-child(5) > div.px-lg.pt-lg > button > span > div > span',
+    ) as HTMLElement | null
+    let itemInfo = node.querySelector(
+      '#scrollable-sidebar-element > div:nth-child(2) > div > div:nth-child(5)',
+    ) as HTMLElement | null
+
+    if (offerButton && offerButton.textContent === 'Offer' && itemInfo) {
+      console.log('Offer button found')
+      console.log('Item info', itemInfo)
+
+      // Read the file from 'components/start-bidding-button.html' && 'components/coin-input.html' and append it to the DOM
+      const paths = ['components/coin-input.html', 'components/start-bidding-button.html']
+
+      paths.forEach((path) => {
+        fetch(chrome.runtime.getURL(path))
+          .then((response) => response.text())
+          .then((html) => {
+            console.log(`Appending ${path}`)
+            itemInfo.insertAdjacentHTML('beforeend', html)
+          })
+      })
     }
   })
 

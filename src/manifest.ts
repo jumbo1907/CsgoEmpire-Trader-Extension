@@ -53,7 +53,9 @@ export default defineManifest({
         'img/logo-48.png',
         'img/logo-128.png',
         'inject/csgoempire-inject.js',
-        'inject/steam-inject.js'
+        'inject/steam-inject.js',
+        'components/start-bidding-button.html',
+        'components/coin-input.html',
       ],
       matches: [
         'https://*.csgoempire.gg/*',
