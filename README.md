@@ -9,9 +9,9 @@ Currently the extension only works if the language is set to ENG. This is becaus
 ## Features
 
 - Trades are automatically set up with the correct item selected. [showcase](https://www.youtube.com/watch?v=ArWSiCZ4bJU)
-- Trades are sent instantly in a single click [showcase](https://www.youtube.com/watch?v=C9F-EHJCkyA)
-- Withdraw multiple items at once [showcase](https://www.youtube.com/watch?v=EWiaYUxLpM0)
-- Select all & deselect all buttons on the deposit page
+- Trades are sent instantly in a single click. [showcase](https://www.youtube.com/watch?v=C9F-EHJCkyA)
+- Withdraw multiple items at once. [showcase](https://www.youtube.com/watch?v=EWiaYUxLpM0)
+- Select all & deselect all buttons on the deposit page. [showcase](https://imgur.com/a/FRTKzo5)
 
 ## Planned features
 
