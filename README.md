@@ -1,4 +1,6 @@
 # Unofficial CsgoEmpire Trader Extension
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/idbobdadgcifckdedkdppkmifmcppbek?label=Chrome%20Rating&style=flat&logo=google)](https://chromewebstore.google.com/detail/unoffical-csgoempire-trad/idbobdadgcifckdedkdppkmifmcppbek)
+[![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/idbobdadgcifckdedkdppkmifmcppbek?label=Chrome%20Users&style=flat&logo=google)](https://chromewebstore.google.com/detail/unoffical-csgoempire-trad/idbobdadgcifckdedkdppkmifmcppbek)
 
 This extension is a tool for traders on CSGOEmpire.com. Currently it is very limited in functionality, but the project will grow over time. It's main purpose is to enhance the trading experience on CSGOEmpire in ways that the site itself is not able to provide.
 
