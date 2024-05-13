@@ -50,12 +50,14 @@ function handleMutation(mutation: MutationRecord) {
     let confirmButton = node.querySelector(
       '.btn-primary.pop.stretch.flex.rounded.text-dark-5',
     ) as HTMLElement | null
+    let isOnWithdrawPage: boolean = window.location.pathname === '/withdraw/steam/market'
 
     if (confirmButton) {
       // Find span > div > span
       let span = confirmButton.querySelector('span > div > span') as HTMLElement | null
-      if (span && span.textContent === 'Confirm')
+      if (span && span.textContent === 'Confirm' && isOnWithdrawPage) {
         confirmButton.onclick = () => window.postMessage({ type: 'buy-selected-items' }, '*')
+      }
     }
 
     let isOnDepositPage: boolean = window.location.pathname === '/deposit/steam'
